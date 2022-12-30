@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,21 +7,73 @@ namespace Cathei.Mathematics
 {
     public static class RotationMath
     {
+        public const float Rad2Deg = 180 / MathF.PI;
+        public const float Deg2Rad = MathF.PI / 180;
+
+        private static int FloorToInt(float f)
+        {
+            return (int)MathF.Floor(f);
+        }
+
+        /// <summary>
+        /// Wrap given degree in (0, 360) range.
+        /// </summary>
+        public static float Wrap(float degree)
+        {
+            int offset = FloorToInt(degree / 360);
+            return degree - offset * 360;
+        }
+
+        /// <summary>
+        /// Clamp given degree with lower bound and upper bound.
+        /// The parameters will be treated as angle and will wrap over 360 degree.
+        /// This method will return closest bound if degree is outside of (min, max) range.
+        /// </summary>
+        public static float Clamp(float degree, float min, float max)
+        {
+            // wrap the values
+            degree = Wrap(degree);
+            min = Wrap(min);
+            max = Wrap(max);
+
+            if (max < min)
+                max += 360;
+
+            float gap = max - min;
+
+            if (degree < min - 180 + gap / 2)
+                degree += 360;
+
+            degree = MathF.Max(MathF.Min(degree, max), min);
+            return Wrap(degree);
+        }
+
+        /// <summary>
+        /// Calculate projectile ejection angle for given distance and speed, with physics gravity.
+        /// </summary>
+        public static bool Projectile(float dist, float speed, out float angle)
+        {
+            return Projectile(dist, speed, Physics2D.gravity.y, out angle);
+        }
+
+        /// <summary>
+        /// Calculate projectile ejection angle for given distance, speed and gravity.
+        /// Returns false if it's not possible to reach.
+        /// </summary>
+        public static bool Projectile(float dist, float speed, float gravity, out float angle)
+        {
+            angle = MathF.Asin(dist * gravity / (speed * speed)) / 2f;
+            return !float.IsNaN(angle);
+        }
+
         /// <summary>
         /// Calculate direction Vector2 on XY plane of given angle in degrees.
         /// This is optimized version of Quaternion.Euler(0, 0, degree) * Vector3.right.
         /// </summary>
         public static Vector2 Right(float degree)
         {
-            return RightRadian(degree * Mathf.Deg2Rad);
-        }
-
-        /// <summary>
-        /// Calculate direction Vector2 on XY plane of given angle in radians.
-        /// </summary>
-        private static Vector2 RightRadian(float radian)
-        {
-            return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
+            float radian = degree * Deg2Rad;
+            return new Vector2(MathF.Cos(radian), MathF.Sin(radian));
         }
 
         /// <summary>
@@ -29,8 +82,26 @@ namespace Cathei.Mathematics
         /// </summary>
         public static float Degree(Vector2 right)
         {
-            return Mathf.Atan2(right.y, right.x) * Mathf.Rad2Deg;
+            return MathF.Atan2(right.y, right.x) * Rad2Deg;
         }
+
+        // /// <summary>
+        // /// Calculate projectile ejection angle for given positions and speed, with physics gravity.
+        // /// Returns false if it's not possible to reach.
+        // /// </summary>
+        // public static bool Projectile(Vector2 from, Vector2 to, float speed, out float angle)
+        // {
+        //     return Projectile(from, to, speed, Physics2D.gravity.y, out angle);
+        // }
+        //
+        // /// <summary>
+        // /// Calculate projectile ejection angle for given positions, speed and gravity.
+        // /// Returns false if it's not possible to reach.
+        // /// </summary>
+        // public static bool Projectile(Vector2 from, Vector2 to, float speed, float gravity, out float angle)
+        // {
+        //
+        // }
 
         /// <summary>
         /// Calculate normalized direction Vector3 of given yaw (Y-axis rotation) and pitch (X-axis rotation), in degrees.
@@ -38,16 +109,11 @@ namespace Cathei.Mathematics
         /// </summary>
         public static Vector3 Forward(float yaw, float pitch)
         {
-            return ForwardRadian(yaw * Mathf.Deg2Rad, pitch * Mathf.Deg2Rad);
-        }
+            yaw *= Deg2Rad;
+            pitch *= Deg2Rad;
 
-        /// <summary>
-        /// Calculate normalized direction Vector3 of given yaw (Y-axis rotation) and pitch (X-axis rotation), in radians.
-        /// </summary>
-        private static Vector3 ForwardRadian(float yaw, float pitch)
-        {
-            float rot = Mathf.Cos(pitch);
-            return new Vector3(Mathf.Cos(yaw) * rot, Mathf.Sin(pitch), Mathf.Sin(yaw) * rot);
+            float rot = MathF.Cos(pitch);
+            return new Vector3(MathF.Cos(yaw) * rot, MathF.Sin(pitch), MathF.Sin(yaw) * rot);
         }
 
         /// <summary>
@@ -55,7 +121,7 @@ namespace Cathei.Mathematics
         /// </summary>
         public static float Yaw(Vector3 forward)
         {
-            return Mathf.Atan2(forward.z, forward.x) * Mathf.Rad2Deg;
+            return MathF.Atan2(forward.z, forward.x) * Rad2Deg;
         }
 
         /// <summary>
@@ -63,7 +129,7 @@ namespace Cathei.Mathematics
         /// </summary>
         public static float Pitch(Vector3 forward)
         {
-            return Mathf.Asin(forward.y) * Mathf.Rad2Deg;
+            return MathF.Asin(forward.y) * Rad2Deg;
         }
 
         /// <summary>
