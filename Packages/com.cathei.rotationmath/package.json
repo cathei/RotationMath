@@ -1,0 +1,12 @@
+{
+  "name": "com.cathei.rotationmath",
+  "displayName": "RotationMath",
+  "author": {
+    "name": "Maxwell Keonwoo Kang"
+  },
+  "version": "0.0.1",
+  "unity": "2020.1",
+  "description": "Fast Linq-to-object source generator",
+  "license": "MIT",
+  "documentationUrl": "https://github.com/cathei/LinqGen"
+}
