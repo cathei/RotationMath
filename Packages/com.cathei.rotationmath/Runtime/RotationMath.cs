@@ -10,42 +10,43 @@ namespace Cathei.Mathematics
         public const float Rad2Deg = 180 / MathF.PI;
         public const float Deg2Rad = MathF.PI / 180;
 
-        private static int FloorToInt(float f)
-        {
-            return (int)MathF.Floor(f);
-        }
-
         /// <summary>
-        /// Wrap given degree in (0, 360) range.
+        /// Wrap given degree in (-180, 180) range.
         /// </summary>
-        public static float Wrap(float degree)
+        public static float Normalize(float degree)
         {
-            int offset = FloorToInt(degree / 360);
+            int offset = FloorToInt((degree + 180) / 360);
             return degree - offset * 360;
         }
 
         /// <summary>
         /// Clamp given degree with lower bound and upper bound.
-        /// The parameters will be treated as angle and will wrap over 360 degree.
+        /// The parameters will be treated as angle and normalized in range of -180 to 180.
         /// This method will return closest bound if degree is outside of (min, max) range.
         /// </summary>
         public static float Clamp(float degree, float min, float max)
         {
             // wrap the values
-            degree = Wrap(degree);
-            min = Wrap(min);
-            max = Wrap(max);
+            degree = Normalize(degree);
+            min = Normalize(min);
+            max = Normalize(max);
+
+            float tDegree = degree, tMax = max;
 
             if (max < min)
-                max += 360;
+            {
+                tDegree += 360;
+                tMax += 360;
+            }
 
-            float gap = max - min;
+            if (min <= tDegree && tDegree <= tMax)
+                return degree;
 
-            if (degree < min - 180 + gap / 2)
-                degree += 360;
+            float gap = (360 - (tMax - min)) / 2f;
 
-            degree = MathF.Max(MathF.Min(degree, max), min);
-            return Wrap(degree);
+            if (tDegree < min)
+                return tDegree < min - gap ? max : min;
+            return tDegree > tMax + gap ? min : max;
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Cathei.Mathematics
 
         /// <summary>
         /// Calculate degree of given 2D direction.
-        /// This is optimized version of Vector2.SignedAngle(right, Vector3.right) in 0-360 range.
+        /// This is optimized version of Vector2.SignedAngle(right, Vector3.right).
         /// </summary>
         public static float Degree(Vector2 right)
         {
@@ -171,6 +172,11 @@ namespace Cathei.Mathematics
             var diff = to - from;
             float distSqr = diff.x * diff.x + diff.z * diff.z;
             return Projectile(distSqr, diff.y, speed, gravity, out angle);
+        }
+
+        private static int FloorToInt(float f)
+        {
+            return (int)MathF.Floor(f);
         }
 
         private static bool Projectile(float distSqr, float height, float speed, float gravity, out float angle)
