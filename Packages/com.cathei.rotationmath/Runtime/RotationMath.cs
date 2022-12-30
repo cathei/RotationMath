@@ -89,8 +89,8 @@ namespace Cathei.Mathematics
             yaw *= Deg2Rad;
             pitch *= Deg2Rad;
 
-            float rot = MathF.Cos(pitch);
-            return new Vector3(MathF.Cos(yaw) * rot, MathF.Sin(pitch), MathF.Sin(yaw) * rot);
+            float rot = MathF.Cos(-pitch);
+            return new Vector3(MathF.Sin(yaw) * rot, MathF.Sin(-pitch), MathF.Cos(yaw) * rot);
         }
 
         /// <summary>

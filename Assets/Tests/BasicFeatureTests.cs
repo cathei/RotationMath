@@ -50,11 +50,88 @@ namespace Cathei.Mathematics.Tests
         [Test]
         public void Angle2D()
         {
-            Assert.AreEqual(0f, RotationMath.Degree(Vector2.right), Tolerance);
-            Assert.AreEqual(45f, RotationMath.Degree(new Vector2(1, 1)), Tolerance);
-            Assert.AreEqual(90f, RotationMath.Degree(Vector2.up), Tolerance);
-            Assert.AreEqual(180f, RotationMath.Degree(Vector2.left), Tolerance);
-            Assert.AreEqual(-45f, RotationMath.Degree(new Vector2(1, -1)), Tolerance);
+            void test(Vector2 input)
+            {
+                float expected = Vector2.SignedAngle(Vector2.right, input);
+                Assert.AreEqual(expected, RotationMath.Degree(input), Tolerance);
+            }
+
+            test(Vector2.right);
+            test(Vector2.left);
+            test(new Vector2(1f, 1f));
+            test(new Vector2(-1f, 1f));
+            test(new Vector2(0.2f, 0f));
+            test(new Vector2(0.4f, -0.3f));
+            test(new Vector2(-20, -10));
+        }
+
+        [Test]
+        public void ForwardYawPitch()
+        {
+            void test(float yaw, float pitch)
+            {
+                Vector3 expected = Quaternion.Euler(pitch, yaw, 0) * Vector3.forward;
+                VectorAssert.AreEqual(expected, RotationMath.Forward(yaw, pitch), Tolerance);
+            }
+
+            test(0, 0);
+            test(0, 45);
+            test(30, 30);
+            test(-30, -90);
+            test(-45, 60);
+            test(50, -60);
+            test(120, 180);
+        }
+
+        [Test]
+        public void RightQuaternion()
+        {
+            void test(Quaternion input)
+            {
+                Vector3 expected = input * Vector3.right;
+                VectorAssert.AreEqual(expected, RotationMath.Right(input), Tolerance);
+            }
+
+            test(Quaternion.identity);
+            test(Quaternion.Euler(90, 0, 0));
+            test(Quaternion.Euler(45, 60, 90));
+            test(Quaternion.Euler(45, -30, -10));
+            test(Quaternion.Euler(-30, 60, 70));
+            test(Quaternion.Euler(-30, -185, 0));
+        }
+
+        [Test]
+        public void UpQuaternion()
+        {
+            void test(Quaternion input)
+            {
+                Vector3 expected = input * Vector3.up;
+                VectorAssert.AreEqual(expected, RotationMath.Up(input), Tolerance);
+            }
+
+            test(Quaternion.identity);
+            test(Quaternion.Euler(90, 0, 0));
+            test(Quaternion.Euler(45, 60, 90));
+            test(Quaternion.Euler(45, -30, -10));
+            test(Quaternion.Euler(-30, 60, 70));
+            test(Quaternion.Euler(-30, -185, 0));
+        }
+
+        [Test]
+        public void ForwardQuaternion()
+        {
+            void test(Quaternion input)
+            {
+                Vector3 expected = input * Vector3.forward;
+                VectorAssert.AreEqual(expected, RotationMath.Forward(input), Tolerance);
+            }
+
+            test(Quaternion.identity);
+            test(Quaternion.Euler(90, 0, 0));
+            test(Quaternion.Euler(45, 60, 90));
+            test(Quaternion.Euler(45, -30, -10));
+            test(Quaternion.Euler(-30, 60, 70));
+            test(Quaternion.Euler(-30, -185, 0));
         }
     }
 }
