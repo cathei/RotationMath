@@ -49,21 +49,15 @@ namespace Cathei.Mathematics
         }
 
         /// <summary>
-        /// Calculate projectile ejection angle for given distance and speed, with physics gravity.
-        /// </summary>
-        public static bool Projectile(float dist, float speed, out float angle)
-        {
-            return Projectile(dist, speed, Physics2D.gravity.y, out angle);
-        }
-
-        /// <summary>
         /// Calculate projectile ejection angle for given distance, speed and gravity.
         /// Returns false if it's not possible to reach.
         /// </summary>
         public static bool Projectile(float dist, float speed, float gravity, out float angle)
         {
-            angle = MathF.Asin(dist * gravity / (speed * speed)) / 2f;
-            return !float.IsNaN(angle);
+            angle = MathF.Asin(dist * -gravity / (speed * speed)) / 2f;
+            angle *= Rad2Deg;
+
+            return float.IsNaN(angle);
         }
 
         /// <summary>
@@ -84,24 +78,6 @@ namespace Cathei.Mathematics
         {
             return MathF.Atan2(right.y, right.x) * Rad2Deg;
         }
-
-        // /// <summary>
-        // /// Calculate projectile ejection angle for given positions and speed, with physics gravity.
-        // /// Returns false if it's not possible to reach.
-        // /// </summary>
-        // public static bool Projectile(Vector2 from, Vector2 to, float speed, out float angle)
-        // {
-        //     return Projectile(from, to, speed, Physics2D.gravity.y, out angle);
-        // }
-        //
-        // /// <summary>
-        // /// Calculate projectile ejection angle for given positions, speed and gravity.
-        // /// Returns false if it's not possible to reach.
-        // /// </summary>
-        // public static bool Projectile(Vector2 from, Vector2 to, float speed, float gravity, out float angle)
-        // {
-        //
-        // }
 
         /// <summary>
         /// Calculate normalized direction Vector3 of given yaw (Y-axis rotation) and pitch (X-axis rotation), in degrees.
@@ -184,6 +160,29 @@ namespace Cathei.Mathematics
             float yw2 = rotation.w * y2;
 
             return new Vector3(xz2 + yw2, yz2 - xw2, 1.0f - (xx2 + yy2));
+        }
+
+        /// <summary>
+        /// Calculate projectile ejection angle for given positions, speed and gravity.
+        /// Returns false if it's not possible to reach.
+        /// </summary>
+        public static bool Projectile(Vector3 from, Vector3 to, float speed, float gravity, out float angle)
+        {
+            var diff = to - from;
+            float distSqr = diff.x * diff.x + diff.z * diff.z;
+            return Projectile(distSqr, diff.y, speed, gravity, out angle);
+        }
+
+        private static bool Projectile(float distSqr, float height, float speed, float gravity, out float angle)
+        {
+            float numerator = distSqr * -gravity / (speed * speed) + height;
+            float denominator = MathF.Sqrt(distSqr + height * height);
+            float phase = MathF.Atan2(MathF.Sqrt(distSqr), -height);
+
+            angle = (MathF.Acos(numerator / denominator) - phase) / 2;
+            angle *= Rad2Deg;
+
+            return !float.IsNaN(angle);
         }
     }
 }
