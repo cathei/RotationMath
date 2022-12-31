@@ -1,3 +1,5 @@
+// RotationMath, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2023
+
 using Cathei.Mathematics;
 using NUnit.Framework;
 using UnityEngine;
@@ -80,7 +82,27 @@ namespace Cathei.Mathematics.Tests
             test(-30, -90);
             test(-45, 60);
             test(50, -60);
-            test(120, 180);
+            test(120, 170);
+        }
+
+        [Test]
+        public void DegreeYawPitch()
+        {
+            void test(float yaw, float pitch)
+            {
+                Vector3 vec = Quaternion.Euler(pitch, yaw, 0) * Vector3.forward;
+                Assert.AreEqual(yaw, RotationMath.Yaw(vec), Tolerance);
+                Assert.AreEqual(pitch, RotationMath.Pitch(vec), Tolerance);
+            }
+
+            test(0, 0);
+            test(0, 45);
+            test(30, 30);
+            test(-30, -80);
+            test(-45, 60);
+            test(50, -60);
+            test(120, 80);
+            test(-120, -80);
         }
 
         [Test]
@@ -132,6 +154,37 @@ namespace Cathei.Mathematics.Tests
             test(Quaternion.Euler(45, -30, -10));
             test(Quaternion.Euler(-30, 60, 70));
             test(Quaternion.Euler(-30, -185, 0));
+        }
+
+        [Test]
+        public void Projectile()
+        {
+            float angle;
+
+            Assert.AreEqual(true, RotationMath.Projectile(40f, 20f, -9.8f, out angle));
+            Assert.AreEqual(39.260829f, angle, Tolerance);
+
+            Assert.AreEqual(true, RotationMath.Projectile(20f, 20f, -9.8f, out angle));
+            Assert.AreEqual(14.670290f, angle, Tolerance);
+
+            Assert.AreEqual(false, RotationMath.Projectile(50f, 20f, -9.8f, out angle));
+        }
+
+        [Test]
+        public void Projectile3D()
+        {
+            float angle;
+
+            Assert.AreEqual(true, RotationMath.Projectile(Vector3.zero, new Vector3(40, -10, 0), 20f, -9.8f, out angle));
+            Assert.AreEqual(60.437389f, angle, Tolerance);
+
+            Assert.AreEqual(true, RotationMath.Projectile(Vector3.zero, new Vector3(10, 10, 0), 20f, -9.8f, out angle));
+            Assert.AreEqual(81.657814f, angle, Tolerance);
+
+            Assert.AreEqual(true, RotationMath.Projectile(Vector3.zero, new Vector3(20, -100, 20), 20f, -9.8f, out angle));
+            Assert.AreEqual(78.237945f, angle, Tolerance);
+
+            Assert.AreEqual(false, RotationMath.Projectile(Vector3.zero, new Vector3(50, 0, 0), 20f, -9.8f, out angle));
         }
     }
 }

@@ -1,3 +1,5 @@
+// RotationMath, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2023
+
 using Cathei.Mathematics;
 using NUnit.Framework;
 using UnityEngine;

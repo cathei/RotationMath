@@ -1,3 +1,5 @@
+// RotationMath, Maxwell Keonwoo Kang <code.athei@gmail.com>, 2023
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,10 +57,16 @@ namespace Cathei.Mathematics
         /// </summary>
         public static bool Projectile(float dist, float speed, float gravity, out float angle)
         {
+            if (float.IsNegative(dist))
+                throw new ArgumentException("Distance must be positive", nameof(dist));
+
+            if (float.IsNegative(speed))
+                throw new ArgumentException("Initial speed must be positive", nameof(speed));
+
             angle = MathF.Asin(dist * -gravity / (speed * speed)) / 2f;
             angle *= Rad2Deg;
 
-            return float.IsNaN(angle);
+            return !float.IsNaN(angle);
         }
 
         /// <summary>
@@ -95,18 +103,20 @@ namespace Cathei.Mathematics
 
         /// <summary>
         /// Calculate yaw (Y axis rotation) of given normalized direction, in degrees.
+        /// The return value is range of -180 to 180.
         /// </summary>
         public static float Yaw(Vector3 forward)
         {
-            return MathF.Atan2(forward.z, forward.x) * Rad2Deg;
+            return MathF.Atan2(forward.x, forward.z) * Rad2Deg;
         }
 
         /// <summary>
         /// Calculate pitch (X axis rotation) of given normalized direction, in degrees.
+        /// The return value is range of -90 to 90.
         /// </summary>
         public static float Pitch(Vector3 forward)
         {
-            return MathF.Asin(forward.y) * Rad2Deg;
+            return -MathF.Asin(forward.y) * Rad2Deg;
         }
 
         /// <summary>
@@ -169,7 +179,10 @@ namespace Cathei.Mathematics
         /// </summary>
         public static bool Projectile(Vector3 from, Vector3 to, float speed, float gravity, out float angle)
         {
-            var diff = to - from;
+            if (float.IsNegative(speed))
+                throw new ArgumentException("Initial speed must be positive", nameof(speed));
+
+            Vector3 diff = to - from;
             float distSqr = diff.x * diff.x + diff.z * diff.z;
             return Projectile(distSqr, diff.y, speed, gravity, out angle);
         }
@@ -185,7 +198,7 @@ namespace Cathei.Mathematics
             float denominator = MathF.Sqrt(distSqr + height * height);
             float phase = MathF.Atan2(MathF.Sqrt(distSqr), -height);
 
-            angle = (MathF.Acos(numerator / denominator) - phase) / 2;
+            angle = (MathF.Acos(numerator / denominator) + phase) / 2;
             angle *= Rad2Deg;
 
             return !float.IsNaN(angle);
