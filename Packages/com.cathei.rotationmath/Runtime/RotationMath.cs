@@ -55,7 +55,7 @@ namespace Cathei.Mathematics
         /// Calculate projectile ejection angle for given distance, speed and gravity.
         /// Returns false if it's not possible to reach.
         /// </summary>
-        public static bool Projectile(float dist, float speed, float gravity, out float angle)
+        public static bool Projectile(float dist, float speed, float gravity, out float degree)
         {
             if (float.IsNegative(dist))
                 throw new ArgumentException("Distance must be positive", nameof(dist));
@@ -63,10 +63,10 @@ namespace Cathei.Mathematics
             if (float.IsNegative(speed))
                 throw new ArgumentException("Initial speed must be positive", nameof(speed));
 
-            angle = MathF.Asin(dist * -gravity / (speed * speed)) / 2f;
-            angle *= Rad2Deg;
+            degree = MathF.Asin(dist * -gravity / (speed * speed)) / 2f;
+            degree *= Rad2Deg;
 
-            return !float.IsNaN(angle);
+            return !float.IsNaN(degree);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Cathei.Mathematics
 
         /// <summary>
         /// Calculate degree of given 2D direction.
-        /// This is optimized version of Vector2.SignedAngle(right, Vector3.right).
+        /// This is optimized version of Vector2.SignedAngle(Vector3.right, right).
         /// </summary>
         public static float Degree(Vector2 right)
         {
@@ -177,14 +177,14 @@ namespace Cathei.Mathematics
         /// Calculate projectile ejection angle for given positions, speed and gravity.
         /// Returns false if it's not possible to reach.
         /// </summary>
-        public static bool Projectile(Vector3 from, Vector3 to, float speed, float gravity, out float angle)
+        public static bool Projectile(Vector3 from, Vector3 to, float speed, float gravity, out float degree)
         {
             if (float.IsNegative(speed))
                 throw new ArgumentException("Initial speed must be positive", nameof(speed));
 
             Vector3 diff = to - from;
             float distSqr = diff.x * diff.x + diff.z * diff.z;
-            return Projectile(distSqr, diff.y, speed, gravity, out angle);
+            return Projectile(distSqr, diff.y, speed, gravity, out degree);
         }
 
         private static int FloorToInt(float f)
@@ -192,16 +192,16 @@ namespace Cathei.Mathematics
             return (int)MathF.Floor(f);
         }
 
-        private static bool Projectile(float distSqr, float height, float speed, float gravity, out float angle)
+        private static bool Projectile(float distSqr, float height, float speed, float gravity, out float degree)
         {
             float numerator = distSqr * -gravity / (speed * speed) + height;
             float denominator = MathF.Sqrt(distSqr + height * height);
             float phase = MathF.Atan2(MathF.Sqrt(distSqr), -height);
 
-            angle = (MathF.Acos(numerator / denominator) + phase) / 2;
-            angle *= Rad2Deg;
+            degree = (MathF.Acos(numerator / denominator) + phase) / 2;
+            degree *= Rad2Deg;
 
-            return !float.IsNaN(angle);
+            return !float.IsNaN(degree);
         }
     }
 }
