@@ -6,7 +6,7 @@
   },
   "version": "0.1.0",
   "unity": "2020.1",
-  "description": "Fast Linq-to-object source generator",
+  "description": "Commonly used rotation mathematics utility for Unity.",
   "license": "MIT",
-  "documentationUrl": "https://github.com/cathei/LinqGen"
+  "documentationUrl": "https://github.com/cathei/RotationMath"
 }
