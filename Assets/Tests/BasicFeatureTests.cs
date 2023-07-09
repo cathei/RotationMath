@@ -36,6 +36,7 @@ namespace Cathei.Mathematics.Tests
             Assert.AreEqual(45f, RotationMath.Clamp(405f, 10f, 60f), Tolerance);
             Assert.AreEqual(-10f, RotationMath.Clamp(380f, 60f, 350f), Tolerance);
             Assert.AreEqual(40f, RotationMath.Clamp(380f, 40f, 350f), Tolerance);
+            Assert.AreEqual(100f, RotationMath.Clamp(100f, 70f, 210f), Tolerance);
         }
 
         [Test]

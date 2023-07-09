@@ -37,7 +37,8 @@ namespace Cathei.Mathematics
 
             if (max < min)
             {
-                tDegree += 360;
+                if (tDegree < min)
+                    tDegree += 360;
                 tMax += 360;
             }
 

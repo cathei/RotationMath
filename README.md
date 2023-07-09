@@ -6,5 +6,5 @@ Commonly used rotation mathematics utility for Unity.
 ## Installation
 Install from Unity Package Manager:
 ```
-https://github.com/cathei/RotationMath.git?path=Packages/com.cathei.rotationmath#v0.1.0
+https://github.com/cathei/RotationMath.git?path=Packages/com.cathei.rotationmath#v0.1.1
 ```
